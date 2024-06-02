@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "three": "^0.154.0"
+  },
+  "name": "hello-world",
+  "version": "1.0.0",
+  "main": "box.js",
+  "devDependencies": {
+    "vite": "^4.4.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
