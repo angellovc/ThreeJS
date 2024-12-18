@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { GroundedSkybox } from 'three/addons/objects/GroundedSkybox.js'
 /**
  * Loaders
  */
@@ -10,23 +11,6 @@ const gltfLoader =  new GLTFLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const rgbeLoader = new RGBELoader();
 
-/**
- * Variables
- */
-const envMap = {
-    intensity: 1
-}
-
-/**
- * Utils
- */
-const updateAllMaterials = (scene) => {
-    scene.traverse((child) => {
-        // if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial)
-        if (child.isMesh && child.material.isMeshStandardMaterial)
-            child.material.envMapIntensity = envMap.intensity;
-    })
-}
 
 /**
  * Base
@@ -58,12 +42,25 @@ const scene = new THREE.Scene()
 // // Ligths Map
 // scene.environment = environmentMap;
 
+
+// Grounded sky
+// To align objects with the floor of the background
 rgbeLoader.load('./environmentMaps/0/2k.hdr', (environmentMap) => {
     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-
-    scene.background = environmentMap;
     scene.environment = environmentMap;
+    const skyBox = new GroundedSkybox(environmentMap, 15, 45);
+    // skyBox.material.wireframe = true;
+    skyBox.position.y = 15;
+    scene.add(skyBox);
 });
+
+// NEON ENV
+// rgbeLoader.load('./environmentMaps/neon-2k.hdr', (environmentMap) => {
+//         environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+//     scene.background = environmentMap;
+//     scene.environment = environmentMap;
+// });
 
 /**
  * Models
@@ -73,8 +70,6 @@ gltfLoader.load(
     (gltf) => {
         gltf.scene.scale.set(10,10,10);
         scene.add(gltf.scene);
-
-        updateAllMaterials(scene);
     }
 );
 
@@ -160,7 +155,8 @@ const tick = () =>
 
 tick()
 
-
-gui.add(envMap, 'intensity').min(0).max(10).step(0.001).onChange(() => updateAllMaterials(scene));
-gui.add(scene, 'backgroundBlurriness').min(0).max(1).step(0.001);
+// Scene visuals
+// gui.add(scene, 'environmentIntensity').min(0).max(10).step(0.001);
+gui.add(scene, 'environmentIntensity').min(0).max(10).step(0.001);
 gui.add(scene, 'backgroundIntensity').min(0).max(10).step(0.001);
+gui.add(scene, 'backgroundBlurriness').min(0).max(1).step(0.001);
